@@ -1,29 +1,28 @@
-
 package aulasdescomplica.collection;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class ArrayListExemple {
     public static void main(String[] args) {
         
+    int num, somaTotal = 0;
+    List<Integer> listaNumero = new ArrayList<>();
     
-    ArrayList<String> listaNome = new ArrayList<>();
-    listaNome.add("Patricio");
-    listaNome.add("Gustavo");
-    listaNome.add("Carol");
-    listaNome.add("Renan");
+    Scanner input = new Scanner(System.in);
+    System.out.println("Quantos numeros serao adicionados a lista?");
+    num = input.nextInt();
     
-    System.out.println("Antes:");
+    for(int i = 0; i < num; i++){
+    System.out.println("Insira aqui o número que ficara no indice '" + i+ "' da lista:");
+    listaNumero.add(input.nextInt());
+    }
     
-    for(String i:listaNome) System.out.println(i);
+    System.out.println(listaNumero);
     
-        System.out.print("------");
-        System.out.print("Depois");
-        System.out.println("------");
-        
-    listaNome.set(1, "Nelson");
+    for(Integer j:listaNumero) somaTotal +=j;
     
-    for(String i: listaNome) System.out.println(i);
-    
+    System.out.println(somaTotal);
     }
 }
