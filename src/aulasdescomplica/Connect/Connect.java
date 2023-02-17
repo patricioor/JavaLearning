@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.Scanner;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,10 +53,7 @@ public class Connect implements InterfaceConnect {
                     for (int i = 1;i <= num; i++){
                         int id = i;  
                          
-                        while(idsExistentes.contains(id)) {
-                            id++;
-
-                        }
+                        while(idsExistentes.contains(id)) id++;
                         
                         idsExistentes.add(id);
                         
@@ -85,12 +81,16 @@ public class Connect implements InterfaceConnect {
                         String nome = rs.getString("nome");
                         System.out.println("Id: " + id + " - Nome: " + nome);
                         } 
+                    
                         PreparedStatement psd = conexao.prepareStatement(INSTRUCAO_DELETE);
+                        
                         System.out.println("Qual o id da linha a ser apagada?");
                         num = input.nextInt();
+                        
                         psd.setInt(1, num);
                         psd.executeUpdate();
                     break;
+                    
                 default:
                     System.out.println("Opção inválida");
                     break;
