@@ -6,66 +6,72 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.Scanner;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Connect {
+public class Connect implements InterfaceConnect {
 
-    public static void main(String[] args) {
-        final String usuario = "postgres";
-        final String senha = "exmDWA159";
-        final String url = "jdbc:postgresql://localhost:5432/postgres";
-        final String driverBanco = "org.postgresql.Driver";
-        final String instrucaoSelect = "SELECT * FROM pessoas;";
-        final String instrucaoInsert = "INSERT INTO public.pessoas(id, nome) VALUES (?, ?);";
-        final String consulta = "SELECT MAX(id) FROM pessoas";
+    public static void main(String[] args) {               
         
         Scanner input = new Scanner(System.in);
-
+        
         try {
-            Class.forName(driverBanco);
-            Connection conexao = DriverManager.getConnection(url, usuario, senha);
+            Class.forName(DRIVER_BANCO);
+            Connection conexao = DriverManager.getConnection(URL, USER, PASSWORD);
 
             Statement sentenca = conexao.createStatement();
-
+            ResultSet rs = sentenca.executeQuery(INSTRUCAO_SELECT);
+            
             System.out.println ("Conexao realizada com sucesso");
             System.out.println("Qual a funcao desejada?");
             System.out.println("1 - Inserir dados na tabela");
             System.out.println("2 - Consultar todos os dados presentes na tabela");
+            System.out.println("3 - Apagar uma linha da tabela");
             int opcao = input.nextInt();
 
             switch (opcao) {
                 case 1:
-                    System.out.println("quantas pessoas serão inseridas?: ");
+                    
+                    System.out.println("quantas pessoas serao inseridas?: ");
                     int num = input.nextInt();
                     
-                    PreparedStatement stmt = conexao.prepareStatement(consulta);
-                    ResultSet resultado = stmt.executeQuery();
+                    PreparedStatement stmt = conexao.prepareStatement(INSTRUCAO_SELECT);
+                    ResultSet resultado = stmt.executeQuery();                   
                     
-                    int ultimoId = 0;
-                    if(resultado.next())ultimoId = resultado.getInt(1);
+                    PreparedStatement psId = conexao.prepareStatement(CONSULTA);
+                    ResultSet rsId = psId.executeQuery();           
+                     
+                    List<Integer> idsExistentes = new LinkedList<>();
                     
-                    PreparedStatement ps = conexao.prepareStatement(instrucaoInsert);  
-                                                                                    
-                    if(ultimoId != 0){
-                        for (int i = ultimoId;i < num+ultimoId; i++) {
-                            System.out.println("Insira o nome da " + (i+1) + "ª pessoa");
-                            String nome = input.next();
-                            ps.setInt(1, i+1);
-                            ps.setString(2, nome);
-                            ps.executeUpdate();
-                        }
-                    } else {
-                        for(int i = ultimoId;i < num+ultimoId; i++) {
-                            System.out.println("Insira o nome da " + (i+1) + "ª pessoa");
-                            String nome = input.next();
-                            ps.setInt(1, i+1);
-                            ps.setString(2, nome);
-                            ps.executeUpdate();
-                            }
-                        }
-                break;
+                    while(rsId.next()){
+                        idsExistentes.add(rsId.getInt(1));
+                    }
+                                       
+                    PreparedStatement ps = conexao.prepareStatement(INSTRUCAO_INSERT);  
+                    
+                    
+                    for (int i = 1;i <= num; i++){
+                        int id = i;  
+                         
+                        while(idsExistentes.contains(id)) {
+                            id++;
 
+                        }
+                        
+                        idsExistentes.add(id);
+                        
+                        System.out.println("Insira o nome da pessoa que ficara na linha " + id);
+                        String nome = input.next();
+
+                        ps.setInt(1, id);
+                        ps.setString(2, nome);
+                        ps.executeUpdate();
+                    }
+                    break;
+                    
                 case 2:
-                    ResultSet rs = sentenca.executeQuery(instrucaoSelect);
+                    
                     while(rs.next()){
                         int id = rs.getInt("id");
                         String nome = rs.getString("nome");
@@ -73,12 +79,24 @@ public class Connect {
                         }
                     break;
                     
+                case 3: 
+                    while(rs.next()){
+                        int id = rs.getInt("id");
+                        String nome = rs.getString("nome");
+                        System.out.println("Id: " + id + " - Nome: " + nome);
+                        } 
+                        PreparedStatement psd = conexao.prepareStatement(INSTRUCAO_DELETE);
+                        System.out.println("Qual o id da linha a ser apagada?");
+                        num = input.nextInt();
+                        psd.setInt(1, num);
+                        psd.executeUpdate();
+                    break;
                 default:
                     System.out.println("Opção inválida");
                     break;
-            }
-                    
-        } catch (Exception excepetion) {
+            }           
+        } 
+        catch (Exception excepetion) {
             System.out.println("Erro na conexao com o banco de dados");
         }
     }
