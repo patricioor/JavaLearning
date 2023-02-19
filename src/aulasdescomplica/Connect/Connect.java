@@ -31,7 +31,6 @@ public class Connect {
                 
                 int opcao = input.nextInt();
 
-
                     switch (opcao) {
                         case 1 -> {
                             System.out.println("quantas pessoas serao inseridas?: ");
@@ -84,9 +83,9 @@ public class Connect {
                             } 
                             PreparedStatement psd = conexao.prepareStatement(INSTRUCAO_DELETE);
                             System.out.println("Qual o id da linha a ser apagada?");
-                        int num = input.nextInt();
-                        psd.setInt(1, num);
-                        psd.executeUpdate();
+                            int num = input.nextInt();
+                            psd.setInt(1, num);
+                            psd.executeUpdate();
                     }
 
                         default -> System.out.println("Opção invalida");
